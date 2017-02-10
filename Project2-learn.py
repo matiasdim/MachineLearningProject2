@@ -1,3 +1,5 @@
+import cPickle as pickle
+
 #reading data
 file  = open("forumTraining-stemmed", "r") 
 
@@ -33,10 +35,9 @@ for d in documents:
 
 vocabulary = set(vocabulary)
 
-# !!!! Probability estimate of a particular class: P(cj) = |Docsj| / |training documents|
+# !!!! Probability estimate of a particular class: P(cj) = |Docsj| / |training documents| = category_prob[k]
 for k in categories:
 	category_prob[k] = categories[k] / len(documents)
-	print category_prob[k]
 
 # Getting n_k
 def get_nk(word, text):
@@ -47,11 +48,28 @@ def get_nk(word, text):
 	return word_count
 
 prob_w_c = {} # {category:{'word':prob}} 
+count = 0
 for k,v in text_j.iteritems():	
+	cont = 0
 	n_k = -1 # {word = number_of_Aparrences} nk = number of times wk occurs in Textj
 	prob_w_c[k] = {}
 	for word in vocabulary:
 		n_k = get_nk(word,v)		
-		prob_w_c[k][word] = (n_k + 1.0) / (len(set(v)) + len(vocabulary))# P(wk | cj) = (nk + 1) / (n + |Vocabulary|)
-		print str(prob_w_c[k])
+		prob_w_c[k][word] = (n_k + 1.0) / (len(v) + len(vocabulary))# !!! P(wk | cj) = (nk + 1) / (n + |Vocabulary|) = prob_w_c[k][word]
+		cont += 1
+		if cont % 1000 == 0:
+			print str(cont) + " of: " + str(len(vocabulary)) + " of " + k
+	count += 1
+	print str(count) + " of: " + str(len(text_j))
+
+# saving P(Cj) and on files P(cj) 
+file_Name = "c_probabilities"
+fileObject = open(file_Name,'wb')
+pickle.dump(category_prob,fileObject)
+fileObject.close()
 	
+# saving P(Cj) and on files P(wk | cj)
+file_Name_2 = "w_c_probabilities"
+fileObject_2 = open(file_Name_2,'wb')
+pickle.dump(prob_w_c,fileObject_2)
+fileObject_2.close()
