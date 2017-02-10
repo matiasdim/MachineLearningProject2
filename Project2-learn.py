@@ -55,16 +55,3 @@ for k,v in text_j.iteritems():
 		prob_w_c[k][word] = (n_k + 1.0) / (len(set(v)) + len(vocabulary))# P(wk | cj) = (nk + 1) / (n + |Vocabulary|)
 		print str(prob_w_c[k])
 	
-
-
-#
-
-
-
-
-
-
-
-
-
-
